@@ -1,0 +1,13 @@
+INPUT(
+./release\main.o
+./release\mainwindow.o
+./release\canreader.o
+./release\canlib_class.o
+./release\receivetest.o
+./release\playavi.o
+./release\moc_mainwindow.o
+./release\moc_canlib_class.o
+./release\moc_canreader.o
+./release\moc_receivetest.o
+./release\moc_playavi.o
+);
