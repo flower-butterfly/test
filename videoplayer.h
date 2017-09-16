@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** Copyright (C) 2015 The Qt Company Ltd.
 ** Contact: http://www.qt.io/licensing/
@@ -42,9 +42,14 @@
 #define VIDEOPLAYER_H
 
 #include <qmediaplayer.h>
-
 #include <QtGui/QMovie>
 #include <QtWidgets/QWidget>
+#include <QMediaService>
+#include <QMediaPlaylist>
+#include <QVideoProbe>
+#include <QMediaMetaData>
+#include <QtWidgets>
+#include <QVideoProbe>
 
 QT_BEGIN_NAMESPACE
 class QAbstractButton;
@@ -72,12 +77,14 @@ private slots:
     void durationChanged(qint64 duration);
     void setPosition(int position);
     void handleError();
-
+public slots:
+    void processFrame(QVideoFrame frame);
 private:
     QMediaPlayer mediaPlayer;
     QAbstractButton *playButton;
     QSlider *positionSlider;
     QLabel *errorLabel;
+    QVideoProbe *probe;
 };
 
 #endif

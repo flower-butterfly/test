@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** Copyright (C) 2015 The Qt Company Ltd.
 ** Contact: http://www.qt.io/licensing/
@@ -43,6 +43,7 @@
 #include <QtWidgets>
 #include <qvideowidget.h>
 #include <qvideosurfaceformat.h>
+#include <qdebug.h>
 
 VideoPlayer::VideoPlayer(QWidget *parent)
     : QWidget(parent)
@@ -93,6 +94,11 @@ VideoPlayer::VideoPlayer(QWidget *parent)
     typedef void (QMediaPlayer::*ErrorSignal)(QMediaPlayer::Error);
     connect(&mediaPlayer, static_cast<ErrorSignal>(&QMediaPlayer::error),
             this, &VideoPlayer::handleError);
+
+    probe = new QVideoProbe(this);
+    connect(probe, SIGNAL(videoFrameProbed(QVideoFrame)), this, SLOT(processFrame(QVideoFrame)));
+    probe->setSource(&mediaPlayer);
+
 }
 
 VideoPlayer::~VideoPlayer()
@@ -169,4 +175,16 @@ void VideoPlayer::handleError()
     else
         message += errorString;
     errorLabel->setText(message);
+}
+
+void VideoPlayer::processFrame(QVideoFrame frame)
+{
+    qDebug()<<"xxxxxxxxxxxx";
+    QImage::Format imageFormat = QVideoFrame::imageFormatFromPixelFormat(frame.pixelFormat());
+    if (imageFormat != QImage::Format_Invalid) {
+        // Process RGB data
+        QImage image(frame.bits(), frame.width(), frame.height(), imageFormat);
+        image = image.convertToFormat(QImage::Format_RGB32);
+        qDebug()<<"xxxxxxxxxxxx";
+    }
 }

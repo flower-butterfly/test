@@ -26,6 +26,7 @@
 #include <QLibrary>
 #include "videoplayer.h"
 
+
 using namespace cv;
 using namespace std;
 
@@ -39,65 +40,62 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),driver(2),
     ui(new Ui::MainWindow)
 {
-//    setFixedSize(1300,700);
+    setFixedSize(1300,700);
 
     ui->setupUi(this);
     ui->pushButton->setText("回放视频");
 
+    cam = NULL;
+    cnt = 0;
+    lineCnt = 0;
+
+    timerCamera = new QTimer(this);
+    connect(timerCamera,SIGNAL(timeout()),this,SLOT(readFrame()));  //时间到，读取当前摄像头信息
+
+    ui->label->setGeometry(0,0,this->width(),this->height());
+//    ui->groupBox->setFixedHeight(150);
+//    ui->groupBox->setFixedWidth(240);
+//    QRect deskRect = QApplication::desktop()->availableGeometry();
+//    ui->groupBox->move(deskRect.right()-250, 0);
+
+
+    QPalette pe;
+    pe.setColor(QPalette::WindowText,Qt::blue);
+    ui->groupBox->setPalette(pe);
+    ui->x->setPalette(pe);
+    ui->y->setPalette(pe);
+    ui->z->setPalette(pe);
+    ui->tar_x->setPalette(pe);
+    ui->tar_y->setPalette(pe);
+    ui->cam_f->setPalette(pe);
+
+    ui->label->setScaledContents(true);
+
+    memset(&data,0,sizeof(data));
+    memset(&buffer,0,sizeof(CANARRAY));
+
+    ui->slider_x->setMinimum(-2000);
+    ui->slider_x->setMaximum(2000);
+    ui->slider_y->setMinimum(-5000);
+    ui->slider_y->setMaximum(5000);
+    ui->slider_z->setMinimum(0);
+    ui->slider_z->setMaximum(5000);
+    ui->slider_tarX->setMinimum(0);
+    ui->slider_tarX->setMaximum(2000);
+    ui->slider_tarX->setValue(1000);
+    ui->slider_tarY->setMinimum(463-5000);
+    ui->slider_tarY->setMaximum(463+5000);
+    ui->slider_tarY->setValue(463);
+    ui->slider_camF->setMinimum(0);
+    ui->slider_camF->setMaximum(15000);
+    ui->slider_camF->setValue(1300);
 
 
 
-//    cam = NULL;
-//    cnt = 0;
-//    lineCnt = 0;
+    reader = new CanReader(0);
+    ZLG_reader = new ReceiveTest(4,0,0);
 
-//    timerCamera = new QTimer(this);
-//    connect(timerCamera,SIGNAL(timeout()),this,SLOT(readFrame()));  //时间到，读取当前摄像头信息
-
-//    ui->label->setGeometry(0,0,this->width(),this->height());
-////    ui->groupBox->setFixedHeight(150);
-////    ui->groupBox->setFixedWidth(240);
-////    QRect deskRect = QApplication::desktop()->availableGeometry();
-////    ui->groupBox->move(deskRect.right()-250, 0);
-
-
-//    QPalette pe;
-//    pe.setColor(QPalette::WindowText,Qt::blue);
-//    ui->groupBox->setPalette(pe);
-//    ui->x->setPalette(pe);
-//    ui->y->setPalette(pe);
-//    ui->z->setPalette(pe);
-//    ui->tar_x->setPalette(pe);
-//    ui->tar_y->setPalette(pe);
-//    ui->cam_f->setPalette(pe);
-
-//    ui->label->setScaledContents(true);
-
-//    memset(&data,0,sizeof(data));
-//    memset(&buffer,0,sizeof(CANARRAY));
-
-//    ui->slider_x->setMinimum(-2000);
-//    ui->slider_x->setMaximum(2000);
-//    ui->slider_y->setMinimum(-5000);
-//    ui->slider_y->setMaximum(5000);
-//    ui->slider_z->setMinimum(0);
-//    ui->slider_z->setMaximum(5000);
-//    ui->slider_tarX->setMinimum(0);
-//    ui->slider_tarX->setMaximum(2000);
-//    ui->slider_tarX->setValue(1000);
-//    ui->slider_tarY->setMinimum(463-5000);
-//    ui->slider_tarY->setMaximum(463+5000);
-//    ui->slider_tarY->setValue(463);
-//    ui->slider_camF->setMinimum(0);
-//    ui->slider_camF->setMaximum(15000);
-//    ui->slider_camF->setValue(1300);
-
-
-
-//    reader = new CanReader(0);
-//    ZLG_reader = new ReceiveTest(4,0,0);
-
-//    connect(ZLG_reader,SIGNAL(mySignal()),this,SLOT(getSignal()));
+    connect(ZLG_reader,SIGNAL(mySignal()),this,SLOT(getSignal()));
 
 }
 
@@ -351,70 +349,70 @@ void MainWindow::on_OpenFile_triggered()
 
 
 
-//    IplImage *frame;
-//    QImage image;
-//    CvCapture *pCapture;
-//    QString filename;
-//    QTime t;
-//    QTime t_t;
+    IplImage *frame;
+    QImage image;
+    CvCapture *pCapture;
+    QString filename;
+    QTime t;
+    QTime t_t;
 
-//    filename = QFileDialog::getOpenFileName(this,tr("选择文件"),"/",tr("Vedio(*.avi *.mp4 *.ts)"));
-//    if(filename.isEmpty())
-//    {
-//        return;
-//    }
+    filename = QFileDialog::getOpenFileName(this,tr("选择文件"),"/",tr("Vedio(*.avi *.mp4 *.ts)"));
+    if(filename.isEmpty())
+    {
+        return;
+    }
 
-//    QByteArray aa = filename.toLatin1();
-//     char *file = aa.data();
+    QByteArray aa = filename.toLatin1();
+     char *file = aa.data();
 
-//    pCapture = cvCaptureFromFile(file);
-//    cvNamedWindow("PlayBack",CV_WINDOW_NORMAL);
-//    HWND hWnd = (HWND)cvGetWindowHandle("PlayBack");
-//    HWND  hRWnd = ::GetParent(hWnd);
-//    ShowWindow(hRWnd,0);
-//    int aviFramePerSec       = (int) cvGetCaptureProperty(pCapture, CV_CAP_PROP_FPS);
-//    int aviTotalFrames = (int) cvGetCaptureProperty(pCapture, CV_CAP_PROP_FRAME_COUNT);
+    pCapture = cvCaptureFromFile(file);
+    cvNamedWindow("PlayBack",CV_WINDOW_NORMAL);
+    HWND hWnd = (HWND)cvGetWindowHandle("PlayBack");
+    HWND  hRWnd = ::GetParent(hWnd);
+    ShowWindow(hRWnd,0);
+    int aviFramePerSec       = (int) cvGetCaptureProperty(pCapture, CV_CAP_PROP_FPS);
+    int aviTotalFrames = (int) cvGetCaptureProperty(pCapture, CV_CAP_PROP_FRAME_COUNT);
 
-//    aviTotalFrames = aviTotalFrames - 1;//会比实际多1帧，why？
-//    qDebug()<<aviFramePerSec;
-//    qDebug()<<aviTotalFrames;
+    aviTotalFrames = aviTotalFrames - 1;//会比实际多1帧，why？
+    qDebug()<<aviFramePerSec;
+    qDebug()<<aviTotalFrames;
 
-//    int canCurFrame = 0;
-//    int static canTotalFrames = q_CanData.count();
+    int canCurFrame = 0;
+    int static canTotalFrames = q_CanData.count();
 
-//    t_t.start();
+    t_t.start();
 
 
-//    while(1)
-//    {
-//        t.start();
-//        frame = cvQueryFrame(pCapture);
-//        if(frame){
+    while(1)
+    {
+        t.start();
+        frame = cvQueryFrame(pCapture);
+        if(frame){
 
-//            int aviCurFrame = (int) cvGetCaptureProperty(pCapture, CV_CAP_PROP_POS_FRAMES);
-////            qDebug()<<"aviCurFrame:"<<aviCurFrame;
+            int aviCurFrame = (int) cvGetCaptureProperty(pCapture, CV_CAP_PROP_POS_FRAMES);
+//            qDebug()<<"aviCurFrame:"<<aviCurFrame;
 
-//            double coffe = (double)aviCurFrame/(double)aviTotalFrames;
+            double coffe = (double)aviCurFrame/(double)aviTotalFrames;
 
-//            canCurFrame = int(double(canTotalFrames)*double(coffe));
-//            canCurFrame = canCurFrame/64;
-////            qDebug()<<"coffe:"<<coffe<<"canCurFrame:"<<canCurFrame;
-//            process(frame,canCurFrame);
+            canCurFrame = int(double(canTotalFrames)*double(coffe));
+            canCurFrame = canCurFrame/64;
+//            qDebug()<<"coffe:"<<coffe<<"canCurFrame:"<<canCurFrame;
+            process(frame,canCurFrame);
 
-////            image = QImage((const uchar*)frame->imageData, frame->width, frame->height,QImage::Format_RGB888).rgbSwapped();
-////            image = image.scaled(ui->label->width(), ui->label->height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
-////            ui->label->setPixmap(QPixmap::fromImage(image));
+            image = QImage((const uchar*)frame->imageData, frame->width, frame->height,QImage::Format_RGB888).rgbSwapped();
+            image = image.scaled(ui->label->width(), ui->label->height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
+            ui->label->setPixmap(QPixmap::fromImage(image));
 
-//            //cvShowImage("PlayBack",frame);
-//            cvWaitKey(1);
-//            qDebug("Time elapsed: %d ms", t.elapsed());
-//        }
-//    }
+            //cvShowImage("PlayBack",frame);
+            cvWaitKey(1);
+            qDebug("Time elapsed: %d ms", t.elapsed());
+        }
+    }
 
-//    qDebug("avi avi avi tatol Time elapsed: %d ms", t_t.elapsed());
-//    qDebug()<<"视频回放结束";
-//    cvDestroyAllWindows();
-//    cvReleaseCapture(&pCapture);
+    qDebug("avi avi avi tatol Time elapsed: %d ms", t_t.elapsed());
+    qDebug()<<"视频回放结束";
+    cvDestroyAllWindows();
+    cvReleaseCapture(&pCapture);
 }
 
 
@@ -783,9 +781,9 @@ void MainWindow::close()
 
 void MainWindow::on_pushButton_clicked()
 {
-//    QDialog *dlg = new QDialog(this);
 
     const QRect availableGeometry = QApplication::desktop()->availableGeometry(&player);
-    player.resize(availableGeometry.width() / 6, availableGeometry.height() / 4);
+    player.resize(availableGeometry.width() , availableGeometry.height() );
     player.show();
+
 }

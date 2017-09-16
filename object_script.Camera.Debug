@@ -4,10 +4,10 @@ INPUT(
 ./debug\canreader.o
 ./debug\canlib_class.o
 ./debug\receivetest.o
-./debug\playavi.o
+./debug\videoplayer.o
 ./debug\moc_mainwindow.o
 ./debug\moc_canlib_class.o
 ./debug\moc_canreader.o
 ./debug\moc_receivetest.o
-./debug\moc_playavi.o
+./debug\moc_videoplayer.o
 );

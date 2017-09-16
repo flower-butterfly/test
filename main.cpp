@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 
     MainWindow mainWin;
 
-    const QRect availableGeometry = QApplication::desktop()->availableGeometry(&mainWin);
-    mainWin.resize(availableGeometry.width() , availableGeometry.height() );
+//    const QRect availableGeometry = QApplication::desktop()->availableGeometry(&mainWin);
+//    mainWin.resize(availableGeometry.width() , availableGeometry.height() );
     mainWin.show();
     //程序进入消息循环，等待可能输入进行相应。Qt完成事件处
     //理及显示的工作，并在应用程序退出是返回exec()的值。

@@ -93,7 +93,7 @@ public:
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         label = new QLabel(centralWidget);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(330, 30, 161, 281));
+        label->setGeometry(QRect(0, 0, 511, 391));
         QFont font;
         font.setFamily(QStringLiteral("Arial"));
         font.setPointSize(20);
