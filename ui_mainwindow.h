@@ -21,6 +21,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QWidget>
 
@@ -59,6 +60,7 @@ public:
     QHBoxLayout *horizontalLayout_6;
     QLabel *cam_f;
     QSlider *slider_camF;
+    QPushButton *pushButton;
     QMenuBar *menuBar;
     QMenu *menuRecord;
     QMenu *menuPlayback;
@@ -91,7 +93,7 @@ public:
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         label = new QLabel(centralWidget);
         label->setObjectName(QStringLiteral("label"));
-        label->setGeometry(QRect(0, 10, 511, 371));
+        label->setGeometry(QRect(330, 30, 161, 281));
         QFont font;
         font.setFamily(QStringLiteral("Arial"));
         font.setPointSize(20);
@@ -219,6 +221,9 @@ public:
 
         gridLayout->addLayout(horizontalLayout_6, 5, 0, 1, 1);
 
+        pushButton = new QPushButton(centralWidget);
+        pushButton->setObjectName(QStringLiteral("pushButton"));
+        pushButton->setGeometry(QRect(110, 20, 75, 23));
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QStringLiteral("menuBar"));
@@ -270,6 +275,7 @@ public:
         tar_x->setText(QApplication::translate("MainWindow", "\347\224\273\351\235\242\346\250\252\345\220\221\350\260\203\346\225\264", 0));
         tar_y->setText(QApplication::translate("MainWindow", "\347\224\273\351\235\242\347\272\265\345\220\221\350\260\203\346\225\264", 0));
         cam_f->setText(QApplication::translate("MainWindow", "\347\204\246\350\267\235F", 0));
+        pushButton->setText(QApplication::translate("MainWindow", "PushButton", 0));
         menuRecord->setTitle(QApplication::translate("MainWindow", "Record", 0));
         menuPlayback->setTitle(QApplication::translate("MainWindow", "Playback", 0));
         menuCameraCfg->setTitle(QApplication::translate("MainWindow", "CameraCfg", 0));

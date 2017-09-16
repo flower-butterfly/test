@@ -15,6 +15,7 @@
 #include <QDateTime>
 #include <stdio.h>
 #include <QThread>
+#include "videoplayer.h"
 
 
 #define eps (0.0001)
@@ -32,7 +33,7 @@ typedef struct CANData{
 }CANData;
 
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow
@@ -70,12 +71,9 @@ private:
     QString gDirectory;
     QString RecordTime;
 
-    //CANValue tar_info_bufa[64];
-    //CANValue tar_info_bufb[64];
-
     int driver;//0--ESRCAN黑盒   1--ZLGCan白盒
 
-
+private:
     void openCamera();
     void OpenDataFile(CANData data);
     void StartRecord(IplImage* frame,char* filename);
@@ -102,6 +100,8 @@ private slots:
     void on_ESRCan_triggered();
     void on_ZLGCan_triggered();
 
+    void on_pushButton_clicked();
+
 public slots:
     void getSignal();
 public:
@@ -112,6 +112,7 @@ public:
     QString strTime;
     QImage image;
     QImage image2;
+    VideoPlayer player;
 };
 
 

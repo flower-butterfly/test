@@ -4,3 +4,6 @@ release/
 *.user
 *.user*
 *.txt
+*.Debug
+*.Release
+*Makefile
